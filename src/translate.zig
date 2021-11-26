@@ -443,14 +443,18 @@ pub fn call_function(
     this: c.napi_value,
     callback: c.napi_value,
     argc: usize,
-    argv: [*]c.napi_value,
-) !void {
-    const result = c.napi_call_function(env, this, callback, argc, argv, null);
+    argv: c.napi_value
+) !c.napi_value {
+    var res: c.napi_value = undefined;
+    const result = c.napi_call_function(env, this, callback, argc, &args, &res);
     switch (result) {
-        .napi_ok => {},
+        .napi_ok => return res,
         // the user's callback may throw a JS exception or call other functions that do so. We
         // therefore don't throw another error.
-        .napi_pending_exception => {},
+        .napi_pending_exception => return throw(env, "napi_pending_exception"),
+        .napi_invalid_arg => return throw(env, "napi_invalid_arg"),
+        .napi_generic_failure => return throw(env, "napi_generic_failure"),
+        .napi_cancelled => return throw(env, "napi_cancelled"),
         else => return throw(env, "Failed to invoke results callback."),
     }
 }

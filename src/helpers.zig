@@ -6,6 +6,9 @@ pub const register_function = translate.register_function;
 pub const throw = translate.throw;
 pub const slice_from_value = translate.slice_from_value;
 pub const create_buffer = translate.create_buffer;
+pub const call_function = translate.call_function;
+pub const create_array = translate.create_array;
+pub const set_array_element = translate.set_array_element;
 
 pub fn create_string(env: c.napi_env, value: [:0]const u8) !c.napi_value {
     var result: c.napi_value = undefined;
